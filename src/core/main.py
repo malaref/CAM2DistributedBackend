@@ -7,18 +7,27 @@ This module resembles the driver program of an analysis submission.
 from pyspark import SparkContext, SparkConf
 
 from camera.camera import IPCamera, StreamFormat
-from analyzer.camera_metadata import CameraMetadata
-from analyzer.frame_metadata import FrameMetadata
 import time
 
 # TODO Make this configurable
 analysis_duration = 20
 frames_limit = 5
+username = 'hamada'
+submission_id = '1000'
 
 def run_analyzer(camera):
-    # Initialize the analyzer
+    # Necessary imports
     from user_analyzer import MyAnalyzer
-    analyzer = MyAnalyzer(camera.id)
+    from util.storage_client import StorageClient
+    from analyzer.camera_metadata import CameraMetadata
+    from analyzer.frame_metadata import FrameMetadata
+    
+    # Initialize a storage client
+    storage_client = StorageClient(username, submission_id, camera.id)
+    
+    # Initialize the analyzer
+    analyzer = MyAnalyzer()
+    analyzer._save = storage_client.save
     analyzer.initialize()
 
     # Initialize the camera
@@ -49,9 +58,9 @@ ctx = SparkContext(conf=conf)
 # Prepare the cameras
 # TODO Make this configurable
 cameras = [
-    IPCamera(1, '89.29.49.6',         '/axis-cgi/jpg/image.cgi', '/axis-cgi/mjpg/video.cgi'),
-    IPCamera(2, '128.104.181.37', '/axis-cgi/jpg/image.cgi', '/axis-cgi/mjpg/video.cgi'),
-    IPCamera(3, '128.210.129.12', '/axis-cgi/jpg/image.cgi', '/axis-cgi/mjpg/video.cgi')]
+    IPCamera('1', '89.29.49.6',         '/axis-cgi/jpg/image.cgi', '/axis-cgi/mjpg/video.cgi'),
+    IPCamera('2', '128.104.181.37', '/axis-cgi/jpg/image.cgi', '/axis-cgi/mjpg/video.cgi'),
+    IPCamera('3', '128.210.129.12', '/axis-cgi/jpg/image.cgi', '/axis-cgi/mjpg/video.cgi')]
 
 # Submit the analysis job
 distributedCameras = ctx.parallelize(cameras)

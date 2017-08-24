@@ -1,5 +1,5 @@
 from flask import Flask, flash, request, redirect, url_for, render_template
-import subprocess
+import subprocess, tempfile, os
 
 app = Flask(__name__)
 app.secret_key = 'some_secret'
@@ -20,8 +20,12 @@ def upload_file():
         elif not file.filename.endswith('.py'):
             flash('The selected file must be a Python script')
         else:
-            file.save('tmp/user_analyzer.py')
-            subprocess.call("$SPARK_HOME/bin/spark-submit --master local[3] --py-files core/cam2.zip,tmp/user_analyzer.py core/main.py", shell=True)
+            temp_directory = tempfile.mkdtemp()
+            temp_file = os.path.join(temp_directory, 'user_analyzer.py')
+            file.save(temp_file)
+            subprocess.call("$SPARK_HOME/bin/spark-submit --master local[3] --py-files core/cam2.zip,{} core/main.py".format(temp_file), shell=True)
+            os.remove(temp_file)
+            os.rmdir(temp_directory)
             flash('Done!')
         return redirect(request.url)
     return render_template('submit.html')

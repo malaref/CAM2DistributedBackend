@@ -12,8 +12,6 @@ Analyzer
 
 """
 
-import numpy
-import cv2
 
 class Analyzer(object):
 
@@ -35,7 +33,7 @@ class Analyzer(object):
 
     """
 
-    def __init__(self, id):
+    def __init__(self):
 
         """Initialize a default `Analyzer` instance.
 
@@ -43,7 +41,8 @@ class Analyzer(object):
 
         """
 
-        self.id = id
+        # Set all the instance attributes to None or empty lists.
+        self._save = None
         self._frames = []
         self._frames_metadata = []
 
@@ -134,8 +133,7 @@ class Analyzer(object):
         """
 
         return self._frames_metadata[frame_index]
-    
-    # TODO use a distributed file system
+
     def save(self, file_name, result):
 
         """Save results permanently to disk.
@@ -159,18 +157,9 @@ class Analyzer(object):
             primitive data types.
 
         """
-        
-        # Construct the file path of the results file.
-        file_path = 'output/' + str(self.id) + '__' + file_name
 
-        # If the result is an OpenCV image, save it as an image.
-        if (isinstance(result, numpy.ndarray)):
-            cv2.imwrite(file_path, result)
-        # Else, save the string representation of the object in a text file.
-        else:
-            with open(file_path, 'a') as f:
-                f.write(str(result))
-
+        # Use the callback method from the `storage_client` to save the results.
+        self._save(file_name, result)
 
     def initialize(self):
 
@@ -224,5 +213,5 @@ class Analyzer(object):
         This method does nothing in the parent `Analyzer` class.
 
         """
-        
+
         pass
