@@ -1,25 +1,9 @@
-from flask import Flask, flash, request, redirect, url_for, render_template
-import subprocess, tempfile, os, json
+from flask import Flask, flash, request, redirect, url_for, render_template, send_file
+from util import submit_to_spark, prepare_result
+import json
 
 app = Flask(__name__)
 app.secret_key = 'some_secret'
-
-def submit_to_spark(conf, analyzer_script):
-	# Create temp files
-	temp_directory = tempfile.mkdtemp()
-	temp_conf_file_path = os.path.join(temp_directory, 'user_conf.json')
-	temp_analyzer_script_path = os.path.join(temp_directory, 'user_analyzer.py')
-	with open(temp_conf_file_path, 'w') as f:
-		json.dump(conf, f, sort_keys=True, indent=4)
-	analyzer_script.save(temp_analyzer_script_path)
-	
-	# Submit to Spark
-	subprocess.call("$SPARK_HOME/bin/spark-submit --master local[3] --py-files core/cam2.zip,{1} core/main.py {0}".format(temp_conf_file_path, temp_analyzer_script_path), shell=True)
-	
-	# Remove temp files
-	os.remove(temp_conf_file_path)
-	os.remove(temp_analyzer_script_path)
-	os.rmdir(temp_directory)
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
@@ -37,12 +21,6 @@ def upload_file():
 		elif not file.filename.endswith('.py'):
 			flash('The selected file must be a Python script')
 		else:
-			temp_directory = tempfile.mkdtemp()
-			temp_file = os.path.join(temp_directory, 'user_analyzer.py')
-			file.save(temp_file)
-			subprocess.call("$SPARK_HOME/bin/spark-submit --master local[3] --py-files core/cam2.zip,{} core/main.py".format(temp_file), shell=True)
-			os.remove(temp_file)
-			os.rmdir(temp_directory)
 			flash('Done!')
 		return redirect(request.url)
 	return render_template('submit.html')
@@ -68,3 +46,6 @@ def json_api():
 		return 'Success!'
 	return 'This is a GET'
 
+@app.route('/<username>/<int:submission_id>/')
+def get_result(username, submission_id):
+	return send_file(prepare_result(username, submission_id)) # TODO Better way to ensure disposal of the file

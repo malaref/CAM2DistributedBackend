@@ -59,19 +59,13 @@ def run_analyzer(camera):
     # Finalize
     camera.close_stream()
     analyzer.finalize()
-    
-# Initialize Spark
-conf = SparkConf().setAppName('CAM2 Analysis')
-ctx = SparkContext(conf=conf)
 
 # Prepare the cameras
-""" Old sample
-cameras = [
-    IPCamera('1', '89.29.49.6',         '/axis-cgi/jpg/image.cgi', '/axis-cgi/mjpg/video.cgi'),
-    IPCamera('2', '128.104.181.37', '/axis-cgi/jpg/image.cgi', '/axis-cgi/mjpg/video.cgi'),
-    IPCamera('3', '128.210.129.12', '/axis-cgi/jpg/image.cgi', '/axis-cgi/mjpg/video.cgi')]
-"""
 cameras = request.cameras
+
+# Initialize Spark
+conf = SparkConf().setMaster('local[{}]'.format(len(cameras))).setAppName('CAM2 Analysis')
+ctx = SparkContext(conf=conf)
 
 # Submit the analysis job
 distributedCameras = ctx.parallelize(cameras)

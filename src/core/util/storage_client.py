@@ -9,7 +9,7 @@ StorageClient
 
 from hdfs import InsecureClient
 
-import numpy, cv2, uuid, os
+import numpy, cv2, tempfile, os
 
 class StorageClient(object):
     
@@ -52,13 +52,18 @@ class StorageClient(object):
 
         """
 
+        # Make sure the file name is legit
+        file_name = file_name.replace('/', '.')
         # If the result is an OpenCV image, save it as an image.
         if (isinstance(result, numpy.ndarray)):
-            # TODO Make this to a temp directory using os.path
-            temp_file_name = str(uuid.uuid4()) + file_name.replace('/', '')
-            cv2.imwrite(temp_file_name, result)
-            self._internal_client.upload(file_name, temp_file_name)
-            os.remove(temp_file_name)
+            # Create temp files
+            temp_directory = tempfile.mkdtemp()
+            temp_image_path = os.path.join(temp_directory, file_name)
+            cv2.imwrite(temp_image_path, result)
+            self._internal_client.upload(file_name, temp_image_path)
+            # Remove temp files
+            os.remove(temp_image_path)
+            os.rmdir(temp_directory)
         # Else, save the string representation of the object in a text file.
         else:
             self._internal_client.write(file_name, str(result))
