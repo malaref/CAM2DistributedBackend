@@ -7,13 +7,18 @@ This module resembles the driver program of an analysis submission.
 from pyspark import SparkContext, SparkConf
 
 from camera.camera import IPCamera, StreamFormat
-import time
+from util.request import Request
+import time, sys
 
-# TODO Make this configurable
-analysis_duration = 20
-frames_limit = 5
-username = 'hamada'
-submission_id = '1000'
+# Setting up the request
+request = Request()
+request.read_from_file(sys.argv[1]) # TODO Use argparse to make it cleaner
+
+username = 'hamada' # TODO Authentication, configuration, etc.
+submission_id = request.submission_id
+analysis_duration = request.duration
+frames_limit = request.snapshots_to_keep
+is_video = request.is_video
 
 def run_analyzer(camera):
     # Necessary imports
@@ -31,7 +36,11 @@ def run_analyzer(camera):
     analyzer.initialize()
 
     # Initialize the camera
-    camera.open_stream(StreamFormat.MJPEG)
+    if is_video:
+        stream_format = StreamFormat.MJPEG
+    else:
+        stream_format = StreamFormat.IMAGE
+    camera.open_stream(stream_format)
     
     # Set up initial meta-data
     start_time = time.time()
@@ -56,11 +65,13 @@ conf = SparkConf().setAppName('CAM2 Analysis')
 ctx = SparkContext(conf=conf)
 
 # Prepare the cameras
-# TODO Make this configurable
+""" Old sample
 cameras = [
     IPCamera('1', '89.29.49.6',         '/axis-cgi/jpg/image.cgi', '/axis-cgi/mjpg/video.cgi'),
     IPCamera('2', '128.104.181.37', '/axis-cgi/jpg/image.cgi', '/axis-cgi/mjpg/video.cgi'),
     IPCamera('3', '128.210.129.12', '/axis-cgi/jpg/image.cgi', '/axis-cgi/mjpg/video.cgi')]
+"""
+cameras = request.cameras
 
 # Submit the analysis job
 distributedCameras = ctx.parallelize(cameras)

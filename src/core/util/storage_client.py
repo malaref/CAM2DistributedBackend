@@ -29,7 +29,7 @@ class StorageClient(object):
 
         """
 
-        self._internal_client = InsecureClient('http://{0}:{1}'.format(namenode_ip, namenode_port), root='/'.join(['/users', username, submission_id, camera_id]))
+        self._internal_client = InsecureClient('http://{0}:{1}'.format(namenode_ip, namenode_port), root='/'.join(['/users', username, str(submission_id), str(camera_id)]))
         
     def save(self, file_name, result):
         """Save results permanently to persistent storage.
