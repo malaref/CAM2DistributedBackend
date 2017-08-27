@@ -7,9 +7,11 @@ CREATE TABLE Users
 CREATE TABLE Submissions
 (
     username VARCHAR(30),
-    application_id CHAR(23),
-    log TEXT,
-    PRIMARY KEY(username, application_id),
+    submissionId CHAR(23),
+    status CHAR(11) NOT NULL,
+    stdout TEXT,
+    stderr TEXT,
+    PRIMARY KEY(username, submissionId),
     FOREIGN KEY(username) REFERENCES Users(username)
 );
 

@@ -14,7 +14,7 @@ import time, sys
 request = Request()
 request.read_from_file(sys.argv[1]) # TODO Use argparse to make it cleaner
 
-username = 'hamada' # TODO Authentication, configuration, etc.
+username = sys.argv[2] # TODO Use argparse to make it cleaner
 master_url = 'spark://Exs:7077' # TODO make this configurable
 								# For local mode: 'local[{}]'.format(len(cameras))
 submission_id = request.submission_id

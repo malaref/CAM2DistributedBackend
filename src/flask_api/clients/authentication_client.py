@@ -1,12 +1,12 @@
 from functools import wraps
 from flask import request, Response
-from database_client import query_db
+from flask_api import database_client
 
 def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    return query_db('SELECT * FROM Users WHERE username=? AND password=?', (username, password), one=True) is not None
+    return database_client.query_db('SELECT * FROM Users WHERE username=? AND password=?', args=(username, password), one=True) is not None
 
 def authenticate():
     """Sends a 401 response that enables basic auth"""

@@ -1,6 +1,6 @@
-from flask_api import app
+from flask_api import app, jobs
 
-from flask import request
+from flask import request, g
 from clients.authentication_client import requires_auth
 from clients.job_client import JobClient
 
@@ -24,9 +24,6 @@ def json_submit():
 			return 'The configuration file must be a JSON file'
 		elif not analyzer_script.filename.endswith('.py'):
 			return 'The analyzer script must be a Python script'
-		# TODO Better control
-		job_client = JobClient(json.load(conf), analyzer_script)
-		job_client.submit()
-		job_client.finalize()
+		jobs.append(JobClient(request.authorization.username, json.load(conf), analyzer_script))
 		return 'Success!'
 	return 'This is a GET'
