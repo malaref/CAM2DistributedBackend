@@ -15,6 +15,8 @@ request = Request()
 request.read_from_file(sys.argv[1]) # TODO Use argparse to make it cleaner
 
 username = 'hamada' # TODO Authentication, configuration, etc.
+master_url = 'spark://Exs:7077' # TODO make this configurable
+								# For local mode: 'local[{}]'.format(len(cameras))
 submission_id = request.submission_id
 analysis_duration = request.duration
 frames_limit = request.snapshots_to_keep
@@ -64,9 +66,9 @@ def run_analyzer(camera):
 cameras = request.cameras
 
 # Initialize Spark
-conf = SparkConf().setMaster('local[{}]'.format(len(cameras))).setAppName('CAM2 Analysis')
+conf = SparkConf().setAppName('CAM2 Analysis').setMaster(master_url).set('spark.cores.max', len(cameras))
 ctx = SparkContext(conf=conf)
 
 # Submit the analysis job
-distributedCameras = ctx.parallelize(cameras)
+distributedCameras = ctx.parallelize(cameras, len(cameras))
 distributedCameras.foreach(run_analyzer)
