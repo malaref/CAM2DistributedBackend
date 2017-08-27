@@ -60,10 +60,10 @@ class StorageClient(object):
             temp_directory = tempfile.mkdtemp()
             temp_image_path = os.path.join(temp_directory, file_name)
             cv2.imwrite(temp_image_path, result)
-            self._internal_client.upload(file_name, temp_image_path)
+            self._internal_client.upload(file_name, temp_image_path, overwrite=True)
             # Remove temp files
             os.remove(temp_image_path)
             os.rmdir(temp_directory)
         # Else, save the string representation of the object in a text file.
         else:
-            self._internal_client.write(file_name, str(result))
+            self._internal_client.write(file_name, str(result), overwrite=True)
