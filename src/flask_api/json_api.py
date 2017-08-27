@@ -1,6 +1,6 @@
-from flask_api import app, jobs
+from flask_api import app, jobs, database_client
 
-from flask import request, g
+from flask import request,  jsonify
 from clients.authentication_client import requires_auth
 from clients.job_client import JobClient
 
@@ -27,3 +27,9 @@ def json_submit():
 		jobs.append(JobClient(request.authorization.username, json.load(conf), analyzer_script))
 		return 'Success!'
 	return 'This is a GET'
+
+@app.route('/json/status/')
+@requires_auth
+def json_status():
+	submission_id = str(request.get_json()['submission_id'])
+	return jsonify(database_client.query_db('SELECT * FROM Submissions WHERE submission_id=?', args=(submission_id,), one=True))

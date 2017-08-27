@@ -7,11 +7,11 @@ CREATE TABLE Users
 CREATE TABLE Submissions
 (
     username VARCHAR(30),
-    submissionId CHAR(23),
+    submission_id CHAR(23),
     status CHAR(11) NOT NULL,
     stdout TEXT,
     stderr TEXT,
-    PRIMARY KEY(username, submissionId),
+    PRIMARY KEY(username, submission_id),
     FOREIGN KEY(username) REFERENCES Users(username)
 );
 
