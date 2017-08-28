@@ -8,15 +8,21 @@ from pyspark import SparkContext, SparkConf
 
 from camera.camera import IPCamera, StreamFormat
 from util.request import Request
-import time, sys
+import time, argparse
+
+# Parsing command line arguments
+parser = argparse.ArgumentParser(description='Spark submitter')
+parser.add_argument('master_url', help='Spark master URL')
+parser.add_argument('namenode_url', help='HDFS namenode URL')
+parser.add_argument('username', help='username of the submitter')
+parser.add_argument('request_file', help='.json file')
+args = parser.parse_args()
 
 # Setting up the request
 request = Request()
-request.read_from_file(sys.argv[1]) # TODO Use argparse to make it cleaner
+request.read_from_file(args.request_file)
 
-username = sys.argv[2] # TODO Use argparse to make it cleaner
-master_url = 'spark://Exs:7077' # TODO make this configurable
-								# For local mode: 'local[{}]'.format(len(cameras))
+username = args.username
 submission_id = request.submission_id
 analysis_duration = request.duration
 frames_limit = request.snapshots_to_keep
@@ -30,7 +36,7 @@ def run_analyzer(camera):
     from analyzer.frame_metadata import FrameMetadata
     
     # Initialize a storage client
-    storage_client = StorageClient(username, submission_id, camera.id)
+    storage_client = StorageClient(args.namenode_url, username, submission_id, camera.id)
     
     # Initialize the analyzer
     analyzer = MyAnalyzer()
@@ -66,6 +72,7 @@ def run_analyzer(camera):
 cameras = request.cameras
 
 # Initialize Spark
+master_url = args.master_url	# For local mode: 'local[{}]'.format(len(cameras))
 conf = SparkConf().setAppName('CAM2 Analysis').setMaster(master_url).set('spark.cores.max', len(cameras))
 ctx = SparkContext(conf=conf)
 
