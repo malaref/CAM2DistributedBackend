@@ -6,13 +6,12 @@ import atexit
 
 app = Flask(__name__)
 app.secret_key = 'some_secret'
+master_url = 'spark://Exs:7077'
+namenode_url = 'http://localhost:50070'
 jobs = deque()
+storage_client = StorageClient(namenode_url)
 database_client = DatabaseClient('database.db')
 atexit.register(database_client.close_connection)
-
-@app.route('/<username>/<int:submission_id>/')
-def get_result(username, submission_id):
-	return send_file(StorageClient.prepare_result_as_zip_file(username, submission_id)) # TODO Better way to ensure disposal of the file
 
 import html_api
 import json_api
