@@ -15,6 +15,7 @@ parser = argparse.ArgumentParser(description='Spark submitter')
 parser.add_argument('master_url', help='Spark master URL')
 parser.add_argument('namenode_url', help='HDFS namenode URL')
 parser.add_argument('username', help='username of the submitter')
+parser.add_argument('submission_id', help='the id of the submission')
 parser.add_argument('request_file', help='.json file')
 args = parser.parse_args()
 
@@ -23,7 +24,7 @@ request = Request()
 request.read_from_file(args.request_file)
 
 username = args.username
-submission_id = request.submission_id
+submission_id = args.submission_id
 analysis_duration = request.duration
 frames_limit = request.snapshots_to_keep
 is_video = request.is_video

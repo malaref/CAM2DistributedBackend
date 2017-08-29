@@ -1,6 +1,6 @@
 from functools import wraps
 from flask import request, Response
-from CAM2DistributedBackend.flask_api import database_client
+from CAM2DistributedBackend import database_client
 
 def check_auth(username, password):
     """This function is called to check if a username /

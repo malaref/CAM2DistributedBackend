@@ -1,4 +1,4 @@
-from CAM2DistributedBackend.flask_api import app, database_client, storage_client
+from CAM2DistributedBackend import app, database_client, storage_client
 
 from flask import request,  jsonify, send_file, after_this_request
 from clients.authentication_client import requires_auth
@@ -10,10 +10,11 @@ import json, os
 def _get_submission(username, submission_id):
 	return database_client.query_db('SELECT * FROM Submissions WHERE username=? AND submission_id=?', args=(username, submission_id), one=True)
 
-@app.route('/json/submit/', methods=['POST'])
+@app.route('/submit/', methods=['POST'])
 @requires_auth
 def json_submit():
 	username = request.authorization.username
+	submission_id = request.form['submission_id']
 	if not request.files.has_key('conf'):
 		return 'No configuration file'
 	elif not request.files.has_key('analyzer'):
@@ -28,17 +29,16 @@ def json_submit():
 		return 'The configuration file must be a JSON file'
 	elif not analyzer.filename.endswith('.py'):
 		return 'The analyzer script must be a Python script'
-	json_conf = json.load(conf)
-	if _get_submission(username, json_conf['submission_id']) is not None:
+	if _get_submission(username, submission_id) is not None:
 		return 'Cannot have two submissions with the same "submission_id"'
-	JobClient.submit_job(username, json_conf, analyzer)
+	JobClient.submit_job(username, submission_id, json.load(conf), analyzer)
 	return 'Job submitted!'
 
-@app.route('/json/status/', methods=['POST'])
+@app.route('/status/', methods=['POST'])
 @requires_auth
 def json_status():
 	username = request.authorization.username
-	submission_id = request.get_json()['submission_id']
+	submission_id = request.form['submission_id']
 	submission = _get_submission(username, submission_id)
 	not_found = 'Could not find a submission with "submission_id" = {}'.format(submission_id)
 	
@@ -46,11 +46,11 @@ def json_status():
 		return not_found
 	return jsonify(submission)
 
-@app.route('/json/terminate/', methods=[ 'POST'])
+@app.route('/terminate/', methods=[ 'POST'])
 @requires_auth
 def json_terminate():
 	username = request.authorization.username
-	submission_id = request.get_json()['submission_id']
+	submission_id = request.form['submission_id']
 	submission = _get_submission(username, submission_id)
 	terminated = 'Submission with "submission_id" = {} terminated!'.format(submission_id)
 	not_running = 'Submission with "submission_id" = {} is not running!'.format(submission_id)
@@ -62,11 +62,11 @@ def json_terminate():
 		return terminated
 	return not_running
 
-@app.route('/json/download/', methods=[ 'POST'])
+@app.route('/download/', methods=[ 'POST'])
 @requires_auth
 def json_download():
 	username = request.authorization.username
-	submission_id = request.get_json()['submission_id']
+	submission_id = request.form['submission_id']
 	submission = _get_submission(username, submission_id)
 	not_found = 'Could not find a submission with "submission_id" = {}'.format(submission_id)
 	running = 'Submission with "submission_id" = {} is running!'.format(submission_id)
@@ -83,11 +83,11 @@ def json_download():
 		return response
 	return send_file(file_name)
 
-@app.route('/json/delete/', methods=[ 'POST'])
+@app.route('/delete/', methods=[ 'POST'])
 @requires_auth
 def json_delete():
 	username = request.authorization.username
-	submission_id = request.get_json()['submission_id']
+	submission_id = request.form['submission_id']
 	submission = _get_submission(username, submission_id)
 	not_found = 'Could not find a submission with "submission_id" = {}'.format(submission_id)
 	running = 'Submission with "submission_id" = {} is running!'.format(submission_id)
