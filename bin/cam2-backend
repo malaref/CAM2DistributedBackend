@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo '>>>> Launching CAM2DistributedBackend on Flask built-in server'
+FLASK_APP=CAM2DistributedBackend.flask_api python -m flask run

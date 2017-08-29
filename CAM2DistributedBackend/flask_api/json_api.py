@@ -1,4 +1,4 @@
-from flask_api import app, database_client, storage_client
+from CAM2DistributedBackend.flask_api import app, database_client, storage_client
 
 from flask import request,  jsonify, send_file, after_this_request
 from clients.authentication_client import requires_auth
@@ -16,22 +16,22 @@ def json_submit():
 	username = request.authorization.username
 	if not request.files.has_key('conf'):
 		return 'No configuration file'
-	elif not request.files.has_key('analyzer_script'):
+	elif not request.files.has_key('analyzer'):
 		return 'No analyzer script'
 	conf = request.files['conf']
-	analyzer_script = request.files['analyzer_script']
+	analyzer = request.files['analyzer']
 	if conf.filename == '':
 		return 'No selected configuration file'
-	elif analyzer_script.filename == '':
+	elif analyzer.filename == '':
 		return 'No selected analyzer script'
 	elif not conf.filename.endswith('.json'):
 		return 'The configuration file must be a JSON file'
-	elif not analyzer_script.filename.endswith('.py'):
+	elif not analyzer.filename.endswith('.py'):
 		return 'The analyzer script must be a Python script'
 	json_conf = json.load(conf)
 	if _get_submission(username, json_conf['submission_id']) is not None:
 		return 'Cannot have two submissions with the same "submission_id"'
-	JobClient.submit_job(username, json_conf, analyzer_script)
+	JobClient.submit_job(username, json_conf, analyzer)
 	return 'Job submitted!'
 
 @app.route('/json/status/', methods=['POST'])

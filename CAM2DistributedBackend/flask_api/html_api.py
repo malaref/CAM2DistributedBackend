@@ -1,4 +1,4 @@
-from flask_api import app
+from CAM2DistributedBackend.flask_api import app
 
 from flask import flash, request, redirect, render_template
 

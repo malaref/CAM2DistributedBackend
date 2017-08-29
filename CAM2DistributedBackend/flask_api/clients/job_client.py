@@ -1,4 +1,4 @@
-from flask_api import jobs, database_client, master_url, namenode_url
+from CAM2DistributedBackend.flask_api import jobs, database_client, master_url, namenode_url
 
 import tempfile, os, json, subprocess, threading
 
