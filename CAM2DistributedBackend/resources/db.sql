@@ -12,7 +12,7 @@ CREATE TABLE Submissions
     stdout TEXT,
     stderr TEXT,
     PRIMARY KEY(username, submission_id),
-    FOREIGN KEY(username) REFERENCES Users(username)
+    FOREIGN KEY(username) REFERENCES Users(username) ON DELETE CASCADE
 );
 
 INSERT INTO Users(username, password) VALUES ('admin', 'top_secret_password');

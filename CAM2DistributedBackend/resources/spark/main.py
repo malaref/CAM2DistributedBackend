@@ -27,6 +27,7 @@ submission_id = args.submission_id
 analysis_duration = request.duration
 frames_limit = request.snapshots_to_keep
 is_video = request.is_video
+interval = request.interval
 
 def run_analyzer(camera):
     # Necessary imports
@@ -57,12 +58,14 @@ def run_analyzer(camera):
 
     # Analysis loop
     while time.time() - start_time < analysis_duration:
+        register_time = time.time()
         frame, frame_size = camera.get_frame()
         frame_timestamp = time.time()
         frame_metadata = FrameMetadata(camera_metadata, frame_sequence_num, frame_timestamp)
         analyzer._add_frame(frame, frame_metadata, frames_limit)
         analyzer.on_new_frame()
         frame_sequence_num += 1
+        time.sleep(max(0, register_time + interval - time.time()))
 
     # Finalize
     camera.close_stream()
