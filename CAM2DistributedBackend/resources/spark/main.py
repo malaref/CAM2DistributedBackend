@@ -20,8 +20,7 @@ parser.add_argument('request_file', help='.json file')
 args = parser.parse_args()
 
 # Setting up the request
-request = Request()
-request.read_from_file(args.request_file)
+request = Request(args.request_file)
 
 username = args.username
 submission_id = args.submission_id
