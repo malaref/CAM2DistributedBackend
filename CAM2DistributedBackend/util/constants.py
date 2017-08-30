@@ -1,8 +1,5 @@
-# The timeout used for downloading a single image in seconds.
-DOWNLOAD_TIMEOUT = 5
-
 # The attributes of the JSON request file.
-PROGRAM_ATTRIBUTE = 'program'
+ANALYSIS_CLASS_ATTRIBUTE = 'class'
 TIMESTAMP_ATTRIBUTE = 'timestamp'
 INTERVAL_ATTRIBUTE = 'interval'
 DURATION_ATTRIBUTE = 'duration'

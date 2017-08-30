@@ -1,0 +1,40 @@
+{
+    "cameras": [
+        {
+            "ip": "89.29.49.6", 
+            "key": 1, 
+            "latitude": 0.0, 
+            "longitude": 0.0, 
+            "mjpg_path": "/axis-cgi/mjpg/video.cgi", 
+            "port": 80, 
+            "snapshot_path": "/axis-cgi/jpg/image.cgi", 
+            "type": "ip"
+        },
+        {
+            "ip": "128.104.181.37", 
+            "key": 2, 
+            "latitude": 0.0, 
+            "longitude": 0.0, 
+            "mjpg_path": "/axis-cgi/mjpg/video.cgi", 
+            "port": 80, 
+            "snapshot_path": "/axis-cgi/jpg/image.cgi", 
+            "type": "ip"
+        },
+        {
+            "ip": "128.210.129.12", 
+            "key": 3, 
+            "latitude": 0.0, 
+            "longitude": 0.0, 
+            "mjpg_path": "/axis-cgi/mjpg/video.cgi", 
+            "port": 80, 
+            "snapshot_path": "/axis-cgi/jpg/image.cgi", 
+            "type": "ip"
+        }
+    ], 
+    "duration": 20, 
+    "interval": 0.1, 
+    "is_video": 1, 
+    "class": "MyAnalyzer", 
+    "snapshots_to_keep": 1, 
+    "timestamp": 1458051236.677689
+}

@@ -16,7 +16,7 @@ Request
 
 import json
 
-from camera.camera import IPCamera, NonIPCamera
+from CAM2DistributedBackend.camera.camera import IPCamera, NonIPCamera
 import constants
 
 
@@ -91,7 +91,7 @@ class Request(object):
         self.duration = request[constants.DURATION_ATTRIBUTE]
         self.snapshots_to_keep = request[constants.SNAPSHOTS_TO_KEEP_ATTRIBUTE]
         self.is_video = request[constants.IS_VIDEO_ATTRIBUTE]
-        self.program = request[constants.PROGRAM_ATTRIBUTE]
+        self.analysis_class = request[constants.ANALYSIS_CLASS_ATTRIBUTE]
         self.timestamp = request[constants.TIMESTAMP_ATTRIBUTE]
 
         # Construct the list of `Camera` objects using the information

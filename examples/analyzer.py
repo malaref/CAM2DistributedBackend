@@ -1,14 +1,11 @@
 import cv2
 
-from analyzer.analyzer import Analyzer
+from CAM2DistributedBackend.analyzer.analyzer import Analyzer
 
 class MyAnalyzer(Analyzer):
     
-    def __int__(self, id):
-        Analyzer.__int__(self, id)
-
     def initialize(self):
-        self.bgsub = cv2.BackgroundSubtractorMOG()
+        self.bgsub = cv2.createBackgroundSubtractorMOG2()
         self.frames_num = 0
         self.total_motion = 0
 

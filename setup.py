@@ -1,14 +1,20 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
-    name='CAM2DistributedBackend',
-    version='1.0-a0',
-    packages=['CAM2DistributedBackend'],
-    include_package_data=True,
-    zip_safe=False,
-    install_requires=[
-        'flask',
-        'hdfs',
-    ],
-	scripts=['bin/cam2-backend'],
+	name='CAM2DistributedBackend',
+	version='1.0-a0',
+	packages=find_packages(),
+	include_package_data=True,
+	zip_safe=False,
+	install_requires=[
+		'pyspark',
+		'hdfs',
+		'opencv-python',
+		'numpy',
+		'click'
+	],
+	entry_points='''
+		[console_scripts]
+		CAM2DistributedBackend=CAM2DistributedBackend:cli
+	''',
 ) 
