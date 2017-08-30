@@ -1,5 +1,5 @@
 # The attributes of the JSON request file.
-ANALYSIS_CLASS_ATTRIBUTE = 'class'
+ANALYSIS_CLASS_ATTRIBUTE = 'analysis_class'
 TIMESTAMP_ATTRIBUTE = 'timestamp'
 INTERVAL_ATTRIBUTE = 'interval'
 DURATION_ATTRIBUTE = 'duration'

@@ -13,6 +13,8 @@ setup(
 		'numpy',
 		'click'
 	],
+	use_scm_version=True,
+	setup_requires=['setuptools_scm'],
 	entry_points='''
 		[console_scripts]
 		CAM2DistributedBackend=CAM2DistributedBackend:cli
