@@ -15,16 +15,14 @@ import click
 @click.argument('analyzer_file')
 @click.version_option(prog_name='CAM2DistributedBackend')
 def cli(master_url, namenode_url, username, submission_id, request_file, analyzer_file):
-	from pyspark import SparkContext, SparkConf
-	from CAM2DistributedBackend.camera.camera import IPCamera, StreamFormat
-	from CAM2DistributedBackend.util.request import Request
-	import time
+	'''Entry point of the back-end. Initializes '''
 	
 	# Info
 	username = username
 	submission_id = submission_id
 	
 	# Setting up the request
+	from CAM2DistributedBackend.util.request import Request
 	request = Request(request_file)
 	
 	analysis_class = request.analysis_class
@@ -34,12 +32,13 @@ def cli(master_url, namenode_url, username, submission_id, request_file, analyze
 	interval = request.interval
 	
 	def run_analyzer(camera):
+		'''The analysis function'''
 		# Necessary imports
-		from CAM2DistributedBackend.util.storage_client import StorageClient
-		from CAM2DistributedBackend.analyzer.camera_metadata import CameraMetadata
+		import time
 		from CAM2DistributedBackend.analyzer.frame_metadata import FrameMetadata
 		
 		# Initialize a storage client
+		from CAM2DistributedBackend.util.storage_client import StorageClient
 		storage_client = StorageClient(namenode_url, username, submission_id, camera.id)
 		
 		# Initialize the analyzer
@@ -50,6 +49,7 @@ def cli(master_url, namenode_url, username, submission_id, request_file, analyze
 		analyzer.initialize()
 		
 		# Initialize the camera
+		from CAM2DistributedBackend.camera.camera import StreamFormat
 		if is_video:
 			stream_format = StreamFormat.MJPEG
 		else:
@@ -57,9 +57,10 @@ def cli(master_url, namenode_url, username, submission_id, request_file, analyze
 		camera.open_stream(stream_format)
 		
 		# Set up initial meta-data
-		start_time = time.time()
-		frame_sequence_num = 0
+		from CAM2DistributedBackend.analyzer.camera_metadata import CameraMetadata
 		camera_metadata = CameraMetadata(camera.id, camera.latitude, camera.longitude)
+		frame_sequence_num = 0
+		start_time = time.time()
 		
 		# Analysis loop
 		while time.time() - start_time < analysis_duration:
@@ -80,6 +81,7 @@ def cli(master_url, namenode_url, username, submission_id, request_file, analyze
 	cameras = request.cameras
 	
 	# Initialize Spark
+	from pyspark import SparkContext, SparkConf
 	master_url = master_url	# For local mode: 'local[{}]'.format(len(cameras))
 	conf = SparkConf().setAppName('CAM2').setMaster(master_url).set('spark.cores.max', len(cameras))
 	ctx = SparkContext(conf=conf)
