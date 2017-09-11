@@ -82,7 +82,6 @@ def cli(master_url, namenode_url, username, submission_id, request_file, analyze
 	
 	# Initialize Spark
 	from pyspark import SparkContext, SparkConf
-	master_url = master_url	# For local mode: 'local[{}]'.format(len(cameras))
 	conf = SparkConf().setAppName('CAM2').setMaster(master_url).set('spark.cores.max', len(cameras))
 	ctx = SparkContext(conf=conf)
 	ctx.addPyFile(analyzer_file)
