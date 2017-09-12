@@ -47,7 +47,8 @@ import numpy as np
 
 import error
 
-DOWNLOAD_TIMEOUT = 5
+# NOTE Causes problems in case of slow internet connection
+DOWNLOAD_TIMEOUT = 10
 
 
 class StreamParser(object):
