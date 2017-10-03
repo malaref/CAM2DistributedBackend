@@ -286,7 +286,11 @@ class MJPEGStreamParser(StreamParser):
             raise error.CorruptedFrameError
 
         # Read the binary frame data.
-        frame = self.mjpeg_stream.read(frame_size)
+        try:
+            frame = self.mjpeg_stream.read(frame_size)
+        except:
+            self.restart_stream()
+            raise error.CorruptedFrameError
 
         # Skip the empty line after the binary frame data.
         if self.mjpeg_stream.readline().strip() != '':
