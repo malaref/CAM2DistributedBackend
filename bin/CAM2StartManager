@@ -1,0 +1,36 @@
+#!/bin/bash
+
+ENV_FILE=~/CAM2Environment
+if [ -f $ENV_FILE ]; then
+	. $ENV_FILE
+fi
+
+echo ">>>> Checking for environment variables"
+: ${JAVA_HOME:?}
+: ${SPARK_HOME:?}
+: ${HADOOP_HOME:?}
+export JAVA_HOME
+export SPARK_HOME
+export HADOOP_HOME
+export HADOOP_PREFIX=$HADOOP_HOME
+export HADOOP_CONF_DIR=$HADOOP_PREFIX/etc/hadoop
+
+echo ">>>> Starting HDFS namenode"
+$HADOOP_PREFIX/bin/hdfs namenode -format -nonInteractive CAM2HDFS
+$HADOOP_PREFIX/sbin/hadoop-daemon.sh --config $HADOOP_CONF_DIR --script hdfs start namenode
+echo '
+import urllib2
+up = False
+while not up:
+	try:
+		urllib2.urlopen("http://localhost:50070", timeout=1)
+		up = True
+	except:
+		pass
+from hdfs import InsecureClient
+InsecureClient("http://localhost:50070").set_owner("/", owner="CAM2")
+' | python
+
+
+echo ">>>> Starting Spark master"
+$SPARK_HOME/sbin/start-master.sh --host 0.0.0.0

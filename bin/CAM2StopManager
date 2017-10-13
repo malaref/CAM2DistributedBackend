@@ -1,0 +1,22 @@
+#!/bin/bash
+
+ENV_FILE=~/CAM2Environment
+if [ -f $ENV_FILE ]; then
+	. $ENV_FILE
+fi
+
+echo ">>>> Checking for environment variables"
+: ${JAVA_HOME:?}
+: ${SPARK_HOME:?}
+: ${HADOOP_HOME:?}
+export JAVA_HOME
+export SPARK_HOME
+export HADOOP_HOME
+export HADOOP_PREFIX=$HADOOP_HOME
+export HADOOP_CONF_DIR=$HADOOP_PREFIX/etc/hadoop
+
+echo ">>>> Stopping HDFS namenode"
+$HADOOP_PREFIX/sbin/hadoop-daemon.sh --config $HADOOP_CONF_DIR --script hdfs stop namenode
+
+echo ">>>> Stopping Spark master"
+$SPARK_HOME/sbin/stop-master.sh

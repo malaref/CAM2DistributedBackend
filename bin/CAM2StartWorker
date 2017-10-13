@@ -1,0 +1,32 @@
+#!/bin/bash
+
+ENV_FILE=~/CAM2Environment
+if [ -f $ENV_FILE ]; then
+	. $ENV_FILE
+fi
+
+if [ $# -ne 2 ]
+	then
+		echo 'Not enough arguments!'
+		echo 'Usage: CAM2StartWorker <manager_host> <maximum_concurrent_tasks>'
+		exit 0
+fi
+
+echo ">>>> Checking for environment variables"
+: ${JAVA_HOME:?}
+: ${SPARK_HOME:?}
+: ${HADOOP_HOME:?}
+export JAVA_HOME
+export SPARK_HOME
+export HADOOP_HOME
+export HADOOP_PREFIX=$HADOOP_HOME
+export HADOOP_CONF_DIR=$HADOOP_PREFIX/etc/hadoop
+
+manager_host=$1
+maximum_concurrent_tasks=$2
+
+echo ">>>> Starting HDFS datanode"
+$HADOOP_PREFIX/sbin/hadoop-daemon.sh --config $HADOOP_CONF_DIR --script hdfs start datanode
+
+echo ">>>> Starting Spark slave"
+SPARK_WORKER_CORES=$maximum_concurrent_tasks $SPARK_HOME/sbin/start-slave.sh spark://$manager_host:7077
