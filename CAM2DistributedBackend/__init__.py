@@ -6,7 +6,7 @@ This is the driver program of an analysis submission.
 
 import click
 
-@click.command(help='Make a submission to Spark')
+@click.command(help='Make a submission to the distributed back-end')
 @click.argument('master_url')
 @click.argument('namenode_url')
 @click.argument('username')

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
 	name='CAM2DistributedBackend',
-	version='v1.0-a0',
+	version='v1.0-rc0',
 	packages=find_packages(),
 	zip_safe=False,
 	install_requires=[
